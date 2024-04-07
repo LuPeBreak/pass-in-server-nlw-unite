@@ -2,7 +2,6 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
-import { eventNames } from "process";
 import { BadRequest } from "./_errors/bad-request";
 
 export async function getAttendeeBadge(app: FastifyInstance) {
@@ -10,14 +9,15 @@ export async function getAttendeeBadge(app: FastifyInstance) {
     "/attendees/:attendeeId/badge",
     {
       schema: {
-        summary:"Get an attendee badge",
-        tags:['attendees'],
+        summary: "Get an attendee badge",
+        tags: ["attendees"],
         params: z.object({
           attendeeId: z.coerce.number().int(),
         }),
         response: {
           200: z.object({
             badge: z.object({
+              id: z.number(),
               name: z.string(),
               email: z.string().email(),
               eventTitle: z.string(),
@@ -53,6 +53,7 @@ export async function getAttendeeBadge(app: FastifyInstance) {
 
       return reply.send({
         badge: {
+          id: attendeeId,
           name: attendee.name,
           email: attendee.email,
           eventTitle: attendee.event.title,
